@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.AbstractOption;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -602,7 +603,20 @@ public class Commands {
             BlockPos pos = player.getPosition();
 
             Log.info(Messages.ServerSpawn, viewer, entityType.getName().getString());
-            SendPlayerMessage(player, Messages.ClientSpawn, viewer, entityType.getName().getString());
+
+
+            if (entityType.getName().toString().equals("Bee")) {
+                SendPlayerMessage(player, Messages.ClientSpawnNeutral, viewer, entityType.getName().getString());
+            } else if (entityType.getClassification() == EntityClassification.AMBIENT ||
+                        entityType.getClassification() == EntityClassification.CREATURE ||
+                        entityType.getClassification() == EntityClassification.WATER_CREATURE ||
+                        entityType.getClassification() == EntityClassification.MISC) {
+                SendPlayerMessage(player, Messages.ClientSpawnPassive, viewer, entityType.getName().getString());
+            } else {
+                SendPlayerMessage(player, Messages.ClientSpawnHostile, viewer, entityType.getName().getString());
+            }
+
+
 
             Entity e = entityType.create(player.getEntityWorld());
             e.setPositionAndRotation(pos.getX() + 2, pos.getY() + 2, pos.getZ(), 0, 0);

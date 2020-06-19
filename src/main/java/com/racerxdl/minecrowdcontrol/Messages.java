@@ -50,7 +50,9 @@ public class Messages {
     public static final String ClientSendPlayerToSpawnPoint = TextFormatting.GOLD + "Viewer {0} just send you to spawn point";
     public static final String ClientTakeAllHeartsButHalf = TextFormatting.RED + "Viewer {0} just took all your hearts but half";
     public static final String ClientFillAllHearts = TextFormatting.GREEN + "Viewer {0} just filled all your hearts";
-    public static final String ClientSpawn = TextFormatting.RED + "Viewer {0} just spawn a {1}";
+    public static final String ClientSpawnPassive = TextFormatting.GREEN + "Viewer {0} just spawned a {1}";
+    public static final String ClientSpawnNeutral = TextFormatting.GOLD + "Viewer {0} just spawned a {1}";
+    public static final String ClientSpawnHostile = TextFormatting.RED + "Viewer {0} just spawned a {1}";
     public static final String ClientInvertMouse = TextFormatting.RED + "Viewer {0} just inverted your mouse";
     public static final String ClientRestoreInvertMouse = TextFormatting.GREEN + "Your mouse inversion has been restored";
     public static final String ClientTakeAllFood = TextFormatting.RED + "Viewer {0} just took all your food. Now you're hungry!";

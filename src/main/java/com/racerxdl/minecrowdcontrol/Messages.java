@@ -39,36 +39,36 @@ public class Messages {
     // endregion
 
     // region Client Messages
-    public static final String ClientGiveHeart = TextFormatting.GREEN + "Viewer {0} just gave an heart";
-    public static final String ClientTakeHeart = TextFormatting.RED + "Viewer {0} just took an heart";
-    public static final String ClientGiveFood = TextFormatting.GREEN + "Viewer {0} just gave an food";
-    public static final String ClientTakeFood = TextFormatting.RED + "Viewer {0} just took an food";
-    public static final String ClientSetTimeDay = TextFormatting.GOLD + "Viewer {0} just set time to day";
-    public static final String ClientSetTimeNight = TextFormatting.GOLD + "Viewer {0} just set time to night";
-    public static final String ClientSetFire = TextFormatting.RED + "Viewer {0} just set fire";
-    public static final String ClientKill = TextFormatting.RED + "Viewer {0} just killed you";
-    public static final String ClientSendPlayerToSpawnPoint = TextFormatting.GOLD + "Viewer {0} just send you to spawn point";
-    public static final String ClientTakeAllHeartsButHalf = TextFormatting.RED + "Viewer {0} just took all your hearts but half";
-    public static final String ClientFillAllHearts = TextFormatting.GREEN + "Viewer {0} just filled all your hearts";
-    public static final String ClientSpawnPassive = TextFormatting.GREEN + "Viewer {0} just spawned a {1}";
-    public static final String ClientSpawnNeutral = TextFormatting.GOLD + "Viewer {0} just spawned a {1}";
-    public static final String ClientSpawnHostile = TextFormatting.RED + "Viewer {0} just spawned a {1}";
-    public static final String ClientInvertMouse = TextFormatting.RED + "Viewer {0} just inverted your mouse";
+    public static final String ClientGiveHeart = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just gave an heart";
+    public static final String ClientTakeHeart = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just took an heart";
+    public static final String ClientGiveFood = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just gave an  food";
+    public static final String ClientTakeFood = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just took an food";
+    public static final String ClientSetTimeDay = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the time to day";
+    public static final String ClientSetTimeNight = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the time to night";
+    public static final String ClientSetFire = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just set you on fire";
+    public static final String ClientKill = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just killed you";
+    public static final String ClientSendPlayerToSpawnPoint = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just sent you to spawn point";
+    public static final String ClientTakeAllHeartsButHalf = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just took all your hearts but half";
+    public static final String ClientFillAllHearts = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just filled all your hearts";
+    public static final String ClientSpawnPassive = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just spawned a {1}";
+    public static final String ClientSpawnNeutral = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just spawned a {1}";
+    public static final String ClientSpawnHostile = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just spawned a {1}";
+    public static final String ClientInvertMouse = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just inverted your mouse";
     public static final String ClientRestoreInvertMouse = TextFormatting.GREEN + "Your mouse inversion has been restored";
-    public static final String ClientTakeAllFood = TextFormatting.RED + "Viewer {0} just took all your food. Now you're hungry!";
-    public static final String ClientFillFood = TextFormatting.GREEN + "Viewer {0} just filled all your hunger";
-    public static final String ClientJumpDisabled = TextFormatting.RED + "Viewer {0} just disabled your jump";
+    public static final String ClientTakeAllFood = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just took all your food. Now you're hungry!";
+    public static final String ClientFillFood = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just filled all your hunger";
+    public static final String ClientJumpDisabled = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just disabled your jump";
     public static final String ClientJumpRestored = TextFormatting.GREEN + "Your jump has been restored";
-    public static final String ClientMakeItRain = TextFormatting.GOLD + "Viewer {0} just made it rain";
-    public static final String ClientRainRestored = TextFormatting.GOLD + "Rain just stopped";
-    public static final String ClientGottaGoFast = TextFormatting.YELLOW + "Viewer {0} just made it FAST";
-    public static final String ClientGottaGoFastRestored = "Speed are now normal";
-    public static final String ClientDrunkModeStarted = "Viewer {0} just made game drunk";
-    public static final String ClientDrunkModeRestored = "Game is not drunk anymore";
-    public static final String ClientDestroyItem = TextFormatting.RED + "Viewer {0} just destroyed your {1}";
-    public static final String ClientDropItem = TextFormatting.RED + "Viewer {0} just dropped your {1}";
-    public static final String ClientRepairItem = TextFormatting.RED + "Viewer {0} just repaired your {1}";
-    public static final String ClientCreateItem = TextFormatting.GREEN + "Viewer {0} just gave you a {1}";
-    public static final String ClientSetDifficult = TextFormatting.GOLD + "Viewer {0} just set game difficult to {1}";
+    public static final String ClientMakeItRain = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just made it rain";
+    public static final String ClientRainRestored = TextFormatting.WHITE + "Rain just stopped";
+    public static final String ClientGottaGoFast = TextFormatting.YELLOW + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.YELLOW + " just made it FAST";
+    public static final String ClientGottaGoFastRestored = TextFormatting.WHITE + "Speed is now normal";
+    public static final String ClientDrunkModeStarted = TextFormatting.YELLOW + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.YELLOW + " just made game drunk";
+    public static final String ClientDrunkModeRestored = TextFormatting.WHITE + "Game is not drunk anymore";
+    public static final String ClientDestroyItem = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just destroyed your {1}";
+    public static final String ClientDropItem = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just dropped your {1}";
+    public static final String ClientRepairItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just repaired your {1}";
+    public static final String ClientCreateItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just gave you a {1}";
+    public static final String ClientSetDifficult = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the game difficulty to {1}";
     // endregion
 }

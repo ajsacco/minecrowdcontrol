@@ -3,9 +3,10 @@ package com.racerxdl.minecrowdcontrol;
 import com.racerxdl.minecrowdcontrol.CrowdControl.EffectResult;
 import com.racerxdl.minecrowdcontrol.CrowdControl.RequestType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.AbstractOption;
+import net.minecraft.client.AbstractOption;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,13 +17,17 @@ import net.minecraft.item.Items;
 import net.minecraft.network.play.client.CCreativeInventoryActionPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.storage.IServerWorldInfo;
+import net.minecraft.world.storage.IWorldInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -130,7 +135,7 @@ public class Commands {
         });
 
         difficults.forEach((diff) -> {
-            String diffName = diff.getDisplayName().getUnformattedComponentText().toUpperCase().replace(" ", "");
+            String diffName = diff.getTranslationKey().toUpperCase().replace(" ", "");
             Log.info("Adding command SET_DIFFICULT_{}", diffName);
             CommandList.put("SET_DIFFICULT_" + diffName, (states, player, u1, server, viewer, type) -> SetDifficult(states, player, server, viewer, type, diff));
         });
@@ -157,7 +162,8 @@ public class Commands {
     }
 
     public static void SendPlayerSystemMessage(PlayerEntity player, String msg, Object... params) {
-        player.sendStatusMessage(new StringTextComponent(MessageFormat.format(msg, params)), false);
+        StringTextComponent stc = new StringTextComponent(MessageFormat.format(msg, params));
+        player.sendStatusMessage(stc.func_230531_f_(), false);
     }
 
     public static void SendSystemMessage(MinecraftServer server, String msg, Object... params) {
@@ -177,13 +183,11 @@ public class Commands {
             return res.SetEffectResult(EffectResult.Unavailable);
         }
 
-        player.getEntityWorld().getWorldInfo().setDifficultyLocked(false);
-        player.getEntityWorld().getWorldInfo().setDifficulty(diff);
-        player.getEntityWorld().getWorldInfo().setDifficultyLocked(true);
+        server.setDifficultyForAllWorlds(diff,true);
 
-
-        Log.info(Messages.ServerSetDifficult, viewer, diff.getDisplayName().getUnformattedComponentText());
-        SendPlayerMessage(player, Messages.ClientSetDifficult, viewer, diff.getDisplayName().getUnformattedComponentText());
+        String diffName = diff.getTranslationKey();
+        Log.info(Messages.ServerSetDifficult, viewer, diffName);
+        SendPlayerMessage(player, Messages.ClientSetDifficult, viewer, diffName);
 
         return res.SetEffectResult(EffectResult.Success);
     }
@@ -418,7 +422,7 @@ public class Commands {
                     return false;
                 }
 
-                Biome b = w.getBiome(player.getPosition());
+                Biome b = w.getBiome(player.func_233580_cy_()); // player.getPosition()
 
                 if (b.getPrecipitation() == Biome.RainType.NONE) {
                     return false;
@@ -521,7 +525,8 @@ public class Commands {
             // Send message to all players
             RunOnPlayers(server, (p) -> {
                 SendPlayerMessage(p, Messages.ClientSetTimeNight, viewer);
-                p.getEntityWorld().setDayTime(Tools.NIGHT);
+                IServerWorldInfo info = (IServerWorldInfo)(Objects.requireNonNull(server.getWorld(p.getEntityWorld().func_234923_W_())).getWorldInfo());
+                info.setDayTime(Tools.NIGHT);
                 return true;
             });
             return res.SetEffectResult(EffectResult.Success);
@@ -548,9 +553,9 @@ public class Commands {
             if (player.isPassenger()) {
                 return false;
             }
-            BlockPos spawnPoint = player.getEntityWorld().getSpawnPoint();
+            IWorldInfo worldInfo = player.getEntityWorld().getWorldInfo();
 
-            player.setPositionAndUpdate(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ());
+            player.setPositionAndUpdate(worldInfo.getSpawnX(), worldInfo.getSpawnY(), worldInfo.getSpawnZ());
 
             Log.info(Messages.ServerSendPlayerToSpawnPoint, viewer, player.getName().getString());
             SendPlayerMessage(player, Messages.ClientSendPlayerToSpawnPoint, viewer);
@@ -572,15 +577,18 @@ public class Commands {
             return res.SetEffectResult(EffectResult.Unavailable);
         }
 
-        World world = player.getEntityWorld();
+        World world = server.getWorld(player.getEntityWorld().func_234923_W_()); //player.getEntityWorld().getWorldInfo();
+        assert world != null;
         if (world.getDayTime() > 6000) {
             Log.info(Messages.ServerSetTimeDay, viewer);
             RunOnPlayers(server, (p) -> {
                 SendPlayerMessage(p, Messages.ClientSetTimeDay, viewer);
-                p.getEntityWorld().setDayTime(Tools.DAY);
+                IServerWorldInfo info = (IServerWorldInfo) Objects.requireNonNull(server.getWorld(p.getEntityWorld().func_234923_W_())).getWorldInfo();
+                info.setDayTime(Tools.DAY);
                 return true;
             });
-            world.setDayTime(Tools.DAY);
+            IServerWorldInfo info = (IServerWorldInfo) Objects.requireNonNull(server.getWorld(player.getEntityWorld().func_234923_W_())).getWorldInfo();
+            info.setDayTime(Tools.DAY);
             return res.SetEffectResult(EffectResult.Success);
         }
 
@@ -599,10 +607,23 @@ public class Commands {
         }
 
         boolean result = RunOnPlayers(server, (player) -> {
-            BlockPos pos = player.getPosition();
+            BlockPos pos = player.func_233580_cy_(); // player.getPosition
 
             Log.info(Messages.ServerSpawn, viewer, entityType.getName().getString());
-            SendPlayerMessage(player, Messages.ClientSpawn, viewer, entityType.getName().getString());
+
+
+            if (entityType.getName().getString().equals("Bee")) {
+                SendPlayerMessage(player, Messages.ClientSpawnNeutral, viewer, entityType.getName().getString());
+            } else if (entityType.getClassification() == EntityClassification.AMBIENT ||
+                        entityType.getClassification() == EntityClassification.CREATURE ||
+                        entityType.getClassification() == EntityClassification.WATER_CREATURE ||
+                        entityType.getClassification() == EntityClassification.MISC) {
+                SendPlayerMessage(player, Messages.ClientSpawnPassive, viewer, entityType.getName().getString());
+            } else {
+                SendPlayerMessage(player, Messages.ClientSpawnHostile, viewer, entityType.getName().getString());
+            }
+
+
 
             Entity e = entityType.create(player.getEntityWorld());
             e.setPositionAndRotation(pos.getX() + 2, pos.getY() + 2, pos.getZ(), 0, 0);

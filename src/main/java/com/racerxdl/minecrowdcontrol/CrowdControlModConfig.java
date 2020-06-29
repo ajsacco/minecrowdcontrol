@@ -1,7 +1,6 @@
 package com.racerxdl.minecrowdcontrol;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +17,10 @@ public class CrowdControlModConfig extends ModConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> ModEnabled;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ShowEffectMessages;
     public static final ForgeConfigSpec configSpec;
+
+    public static Logger getLogger() {
+        return Log;
+    }
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();

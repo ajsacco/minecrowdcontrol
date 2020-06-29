@@ -67,6 +67,6 @@ public class Messages {
     public static final String ClientDropItem = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just dropped your {1}";
     public static final String ClientRepairItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just repaired your {1}";
     public static final String ClientCreateItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just gave you a {1}";
-    public static final String ClientSetDifficult = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the game's  difficulty to {1}";
+    public static final String ClientSetDifficult = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the game difficulty to {1}";
     // endregion
 }

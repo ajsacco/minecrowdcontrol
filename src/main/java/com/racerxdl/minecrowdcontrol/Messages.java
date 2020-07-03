@@ -36,7 +36,7 @@ public class Messages {
     public static final String ServerDropItem = "Viewer {} just dropped {} {}";
     public static final String ServerRepairItem = "Viewer {} just repaired {} {}";
     public static final String ServerCreateItem = "Viewer {} just gave {} a {}";
-    public static final String ServerSetDifficult = "Viewer {} just set the game's difficulty to {}";
+    public static final String ServerSetDifficult = "Viewer {} just set the game difficulty to {}";
     public static final String ServerAngerPiglin = "Viewer {} just angered all the piglin near {}";
     public static final String ServerCalmPiglin = "Viewer {} just calmed all the piglin near {}";
     // endregion

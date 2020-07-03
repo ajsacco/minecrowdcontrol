@@ -113,6 +113,8 @@ public class Commands {
             Items.CRAFTING_TABLE,
             Items.SMITHING_TABLE,
 
+            Items.CRAFTING_TABLE,
+
             Items.STONE_PICKAXE,
             Items.STONE_SWORD,
             Items.STONE_AXE,
@@ -130,6 +132,13 @@ public class Commands {
             Items.DIAMOND_CHESTPLATE,
             Items.DIAMOND_LEGGINGS,
             Items.DIAMOND_BOOTS
+    ));
+
+    private static final List<Difficulty> difficults = new ArrayList<>(Arrays.asList(
+            Difficulty.PEACEFUL,
+            Difficulty.EASY,
+            Difficulty.NORMAL,
+            Difficulty.HARD
     ));
 
     private static final List<Difficulty> difficults = new ArrayList<>(Arrays.asList(

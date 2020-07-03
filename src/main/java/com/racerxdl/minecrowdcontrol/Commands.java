@@ -2,37 +2,41 @@ package com.racerxdl.minecrowdcontrol;
 
 import com.racerxdl.minecrowdcontrol.CrowdControl.EffectResult;
 import com.racerxdl.minecrowdcontrol.CrowdControl.RequestType;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.AbstractOption;
-import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.BrainUtil;
+import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
+import net.minecraft.entity.monster.piglin.PiglinEntity;
+import net.minecraft.entity.monster.piglin.PiglinTasks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.play.client.CCreativeInventoryActionPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Commands {
     private static final Logger Log = LogManager.getLogger();
@@ -47,7 +51,8 @@ public class Commands {
         put("SET_TIME_DAY", Commands::SetTimeDay);
         put("TAKE_FOOD", Commands::TakeFood);
         put("GIVE_FOOD", Commands::GiveFood);
-        put("SEND_PLAYER_TO_SPAWN_POINT", Commands::SendPlayerToSpawnPoint);
+        put("SEND_TO_SPAWN_POINT_WORLD", Commands::SendPlayerToWorldSpawn);
+        put("SEND_TO_SPAWN_POINT_PLAYER", Commands::SendPlayerToPlayerSpawn);
         put("TAKE_ALL_HEARTS_BUT_HALF", Commands::TakeAllHeartsButHalf);
         put("FILL_HEARTS", Commands::FillHearts);
         put("INVERT_MOUSE", Commands::SetInvertMouse);
@@ -55,12 +60,15 @@ public class Commands {
         put("TAKE_ALL_FOOD", Commands::TakeAllFood);
         put("FILL_FOOD", Commands::FillFood);
         put("MAKE_IT_RAIN", Commands::SetRaining);
+        put("STOP_RAIN", Commands::StopRain);
         put("GOTTA_GO_FAST", Commands::GottaGoFast);
         put("DRUNK_MODE", Commands::DrunkMode);
         put("DESTROY_SELECTED_ITEM", Commands::DestroySelectedItem);
         put("DROP_SELECTED_ITEM", Commands::DropSelectedItem);
         put("REPAIR_SELECTED_ITEM", Commands::RepairSelectedItem);
         put("EXPLODE_PLAYER", Commands::ExplodePlayer);
+        put("ANGER_PIGLIN", Commands::AngerPiglin);
+        put("CALM_PIGLIN", Commands::CalmPiglin);
     }};
 
     private static final List<EntityType> spawnEntities = new ArrayList<>(Arrays.asList(
@@ -87,7 +95,10 @@ public class Commands {
             EntityType.RAVAGER,
             EntityType.PHANTOM,
             EntityType.VEX,
-            EntityType.TROPICAL_FISH
+            EntityType.TROPICAL_FISH,
+            EntityType.field_233591_ai_,    // Piglin
+            EntityType.field_233588_G_,     // Hoglin
+            EntityType.field_233589_aE_     // Strider
     ));
 
     private static final List<Item> spawnItems = new ArrayList<>(Arrays.asList(
@@ -97,8 +108,10 @@ public class Commands {
             Items.IRON_INGOT,
             Items.GOLD_INGOT,
             Items.DIAMOND,
+            Items.field_234760_kn_,         // Netherite Scrap
 
             Items.CRAFTING_TABLE,
+            Items.SMITHING_TABLE,
 
             Items.STONE_PICKAXE,
             Items.STONE_SWORD,
@@ -111,7 +124,12 @@ public class Commands {
             Items.DIAMOND_SWORD,
             Items.DIAMOND_AXE,
             Items.DIAMOND_HORSE_ARMOR,
-            Items.DIAMOND_SHOVEL
+            Items.DIAMOND_SHOVEL,
+
+            Items.DIAMOND_HELMET,
+            Items.DIAMOND_CHESTPLATE,
+            Items.DIAMOND_LEGGINGS,
+            Items.DIAMOND_BOOTS
     ));
 
     private static final List<Difficulty> difficults = new ArrayList<>(Arrays.asList(
@@ -162,8 +180,7 @@ public class Commands {
     }
 
     public static void SendPlayerSystemMessage(PlayerEntity player, String msg, Object... params) {
-        StringTextComponent stc = new StringTextComponent(MessageFormat.format(msg, params));
-        player.sendStatusMessage(stc.func_230531_f_(), false);
+        player.sendStatusMessage(new StringTextComponent(MessageFormat.format(msg, params)), false);
     }
 
     public static void SendSystemMessage(MinecraftServer server, String msg, Object... params) {
@@ -453,6 +470,26 @@ public class Commands {
         return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Retry);
     }
 
+    public static CommandResult StopRain(PlayerStates states, PlayerEntity unused, Minecraft client, MinecraftServer server, String viewer, RequestType type) {
+        CommandResult res = new CommandResult(states);
+
+        boolean result = RunOnPlayers(server, (player) -> {
+            World w = player.getEntityWorld();
+            if (!w.getWorldInfo().isRaining()) {
+                return false;
+            }
+
+            Log.info(Messages.ServerRainStopped, viewer);
+            SendPlayerMessage(player, Messages.ClientRainStopped, viewer);
+
+            w.getWorldInfo().setRaining(false);
+
+            return true;
+        });
+
+        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Retry);
+    }
+
     public static CommandResult SetInvertMouse(PlayerStates states, PlayerEntity player, Minecraft client, MinecraftServer unused2, String viewer, RequestType type) {
         CommandResult res = new CommandResult(states);
 
@@ -535,7 +572,7 @@ public class Commands {
         return res.SetEffectResult(EffectResult.Unavailable);
     }
 
-    public static CommandResult SendPlayerToSpawnPoint(PlayerStates states, PlayerEntity entity, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
+    public static CommandResult SendPlayerToWorldSpawn(PlayerStates states, PlayerEntity entity, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
         CommandResult res = new CommandResult(states);
 
         if (type == RequestType.Test) {
@@ -553,17 +590,67 @@ public class Commands {
             if (player.isPassenger()) {
                 return false;
             }
-            IWorldInfo worldInfo = player.getEntityWorld().getWorldInfo();
 
+            IWorldInfo worldInfo = player.getEntityWorld().getWorldInfo();
             player.setPositionAndUpdate(worldInfo.getSpawnX(), worldInfo.getSpawnY(), worldInfo.getSpawnZ());
 
-            Log.info(Messages.ServerSendPlayerToSpawnPoint, viewer, player.getName().getString());
-            SendPlayerMessage(player, Messages.ClientSendPlayerToSpawnPoint, viewer);
+            Log.info(Messages.ServerSendToWorldSpawn, viewer, player.getName().getString());
+            SendPlayerMessage(player, Messages.ClientSendToWorldSpawn, viewer);
 
             return true;
         });
 
         return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Retry);
+    }
+
+    public static CommandResult SendPlayerToPlayerSpawn(PlayerStates states, PlayerEntity entity, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
+        CommandResult res = new CommandResult(states);
+
+        if (type == RequestType.Test) {
+            return res.SetEffectResult(EffectResult.Success);
+        }
+
+        if (type == RequestType.Stop) {
+            return res.SetEffectResult(EffectResult.Unavailable);
+        }
+
+        boolean result = RunOnPlayers(server, (player) -> {
+            if (player.getHealth() == 0) {
+                return false;
+            }
+            if (player.isPassenger()) {
+                return false;
+            }
+
+            ServerPlayerEntity serverPlayer = Objects.requireNonNull(Objects.requireNonNull(player.getServer()).getPlayerList().getPlayerByUUID(player.getUniqueID()));
+            BlockPos spawn = serverPlayer.func_241140_K_();
+
+            if (spawn != null && !serverPlayer.func_241142_M_()) {
+                RegistryKey<World> playerDim = player.getEntityWorld().func_234923_W_();
+                RegistryKey<World> serverDim = serverPlayer.func_241141_L_();
+                if(serverDim.equals(playerDim)){
+                    if (player.getEntityWorld().func_234922_V_().equals(DimensionType.field_235999_c_)) {   // Overworld (bed)
+                        Block block = Objects.requireNonNull(player.getEntityWorld().getBlockState(spawn).getBlock());
+                        if(block instanceof BedBlock) {
+                            player.setPositionAndUpdate(spawn.getX(), spawn.getY(), spawn.getZ());
+                            Log.info(Messages.ServerSendToBedSpawn, viewer, player.getName().getString());
+                            SendPlayerMessage(player, Messages.ClientSendToBedSpawn, viewer);
+                            return true;
+                        }
+                    } else {    // Other dimensions (anchor)
+                        if(player.getEntityWorld().getBlockState(spawn).getBlock().equals(Blocks.field_235400_nj_)) {
+                            player.setPositionAndUpdate(spawn.getX(), spawn.getY(), spawn.getZ());
+                            Log.info(Messages.ServerSendToAnchorSpawn, viewer, player.getName().getString());
+                            SendPlayerMessage(player, Messages.ClientSendToAnchorSpawn, viewer);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+
+        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Failure);
     }
 
     public static CommandResult SetTimeDay(PlayerStates states, PlayerEntity player, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
@@ -898,5 +985,80 @@ public class Commands {
         }));
 
         return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Unavailable);
+    }
+
+    public static CommandResult AngerPiglin(PlayerStates states, PlayerEntity unused, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
+        CommandResult res = new CommandResult(states);
+
+        if (type == RequestType.Test) {
+            return res.SetEffectResult(EffectResult.Success);
+        }
+
+        if (type == RequestType.Stop) {
+            return res.SetEffectResult(EffectResult.Unavailable);
+        }
+
+        boolean result = RunOnPlayers(server, (player -> {
+            if (player.getEntityWorld().func_234922_V_().equals(DimensionType.field_236000_d_)) {   // player.getEntityWorld().getDimensionType().equals(DimensionType.THE_NETHER)
+
+                AtomicBoolean areAngry = new AtomicBoolean(false);
+                List<PiglinEntity> piglinEntityList = Objects.requireNonNull(server.getWorld(player.getEntityWorld().func_234923_W_())).getWorld().getEntitiesWithinAABB(PiglinEntity.class, player.getBoundingBox().grow(16.0D));
+
+                piglinEntityList.forEach(piglin -> {
+                    Optional<LivingEntity> target = BrainUtil.func_233864_a_(piglin, MemoryModuleType.field_234078_L_);  // BrainUtil.getLivingEntityFromUUIDMemory((LivingEntity) piglin, MemoryModuleType.ANGRY_AT)
+                    if (target.isPresent() && target.get().equals(player)) {
+                        areAngry.set(true);
+                    }
+                });
+
+                if(!areAngry.get()) {
+                    PiglinTasks.func_234478_a_(player, false);  // PiglinTasks.angerNearbyPiglins(player, false)
+
+                    Log.info(Messages.ServerAngerPiglin, viewer, player.getName().getString());
+                    SendPlayerMessage(player, Messages.ClientAngerPiglin, viewer);
+                    return true;
+                }
+            }
+
+            return false;
+        }));
+
+        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Failure);
+    }
+
+    public static CommandResult CalmPiglin(PlayerStates states, PlayerEntity unused, Minecraft unused2, MinecraftServer server, String viewer, RequestType type) {
+        CommandResult res = new CommandResult(states);
+
+        if (type == RequestType.Test) {
+            return res.SetEffectResult(EffectResult.Success);
+        }
+
+        if (type == RequestType.Stop) {
+            return res.SetEffectResult(EffectResult.Unavailable);
+        }
+
+        boolean result = RunOnPlayers(server, (player -> {
+            if (player.getEntityWorld().func_234922_V_().equals(DimensionType.field_236000_d_)) {   // player.getEntityWorld().getDimensionType().equals(DimensionType.THE_NETHER)
+
+                List<PiglinEntity> piglinEntityList = Objects.requireNonNull(server.getWorld(player.getEntityWorld().func_234923_W_())).getWorld().getEntitiesWithinAABB(PiglinEntity.class, player.getBoundingBox().grow(16.0D));
+
+                piglinEntityList.forEach(piglin -> {
+                    Brain brain = piglin.getBrain();
+
+                    brain.removeMemory(MemoryModuleType.field_234078_L_);   // brain.removeMemory(MemoryModuleType.ANGRY_AT)
+                    brain.removeMemory(MemoryModuleType.field_234103_o_);   // brain.removeMemory(MemoryModuleType.ATTACK_TARGET)
+                    brain.removeMemory(MemoryModuleType.WALK_TARGET);
+                });
+
+                Log.info(Messages.ServerCalmPiglin, viewer, player.getName().getString());
+                SendPlayerMessage(player, Messages.ClientCalmPiglin, viewer);
+
+                return true;
+            }
+
+            return false;
+        }));
+
+        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Failure);
     }
 }

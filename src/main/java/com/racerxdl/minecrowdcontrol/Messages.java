@@ -13,7 +13,9 @@ public class Messages {
     public static final String ServerSetTimeNight = "Viewer {} just set the time to night";
     public static final String ServerSetFire = "Viewer {} just set fire to {}";
     public static final String ServerKill = "Viewer {} just killed {}";
-    public static final String ServerSendPlayerToSpawnPoint = "Viewer {} just sent {} to the world spawn";
+    public static final String ServerSendToWorldSpawn = "Viewer {} just sent {} to the world spawn";
+    public static final String ServerSendToBedSpawn = "Viewer {} just sent {} to their bed spawn";
+    public static final String ServerSendToAnchorSpawn = "Viewer {} just sent {} to their anchor spawn";
     public static final String ServerTakeAllHeartsButHalf = "Viewer {} just took {} hearts";
     public static final String ServerFillAllHearts = "Viewer {} just filled all {} hearts";
     public static final String ServerSpawn = "Viewer {} just spawned a {}";
@@ -24,6 +26,7 @@ public class Messages {
     public static final String ServerJumpDisabled = "Viewer {} just disabled {} jump";
     public static final String ServerJumpRestored = "{} jump is enabled again";
     public static final String ServerMakeItRain = "Viewer {} just made it rain";
+    public static final String ServerRainStopped = "Viewer {} just turned off rain";
     public static final String ServerRainRestored = "The rain just stopped";
     public static final String ServerGottaGoFast = "Viewer {} just made it fast";
     public static final String ServerGottaGoFastRestored = "The speed is now normal";
@@ -34,6 +37,8 @@ public class Messages {
     public static final String ServerRepairItem = "Viewer {} just repaired {} {}";
     public static final String ServerCreateItem = "Viewer {} just gave {} a {}";
     public static final String ServerSetDifficult = "Viewer {} just set the game's difficulty to {}";
+    public static final String ServerAngerPiglin = "Viewer {} just angered all the piglin near {}";
+    public static final String ServerCalmPiglin = "Viewer {} just calmed all the piglin near {}";
     // endregion
 
     // region Client Messages
@@ -45,7 +50,9 @@ public class Messages {
     public static final String ClientSetTimeNight = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the time to night";
     public static final String ClientSetFire = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just set you on fire";
     public static final String ClientKill = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just killed you";
-    public static final String ClientSendPlayerToSpawnPoint = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just sent you to the world spawn";
+    public static final String ClientSendToWorldSpawn = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just sent you to the world spawn";
+    public static final String ClientSendToBedSpawn = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just sent you to your bed spawn";
+    public static final String ClientSendToAnchorSpawn = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just sent you to your anchor spawn";
     public static final String ClientTakeAllHeartsButHalf = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just took all your hearts but half";
     public static final String ClientFillAllHearts = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just filled all your hearts";
     public static final String ClientSpawnPassive = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just spawned a {1}";
@@ -58,6 +65,7 @@ public class Messages {
     public static final String ClientJumpDisabled = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just disabled your jump";
     public static final String ClientJumpRestored = TextFormatting.GREEN + "Your jump is enabled again";
     public static final String ClientMakeItRain = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just made it rain";
+    public static final String ClientRainStopped = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just turned off rain";
     public static final String ClientRainRestored = TextFormatting.WHITE + "The rain just stopped";
     public static final String ClientGottaGoFast = TextFormatting.YELLOW + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.YELLOW + " just made you fast";
     public static final String ClientGottaGoFastRestored = TextFormatting.WHITE + "Your speed is now normal";
@@ -68,5 +76,7 @@ public class Messages {
     public static final String ClientRepairItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just repaired your {1}";
     public static final String ClientCreateItem = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just gave you a {1}";
     public static final String ClientSetDifficult = TextFormatting.GOLD + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GOLD + " just set the game difficulty to {1}";
+    public static final String ClientAngerPiglin = TextFormatting.RED + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.RED + " just angered every nearby Piglin";
+    public static final String ClientCalmPiglin = TextFormatting.GREEN + "Viewer " + TextFormatting.AQUA + "{0}" + TextFormatting.GREEN + " just calmed down every nearby Piglin";
     // endregion
 }

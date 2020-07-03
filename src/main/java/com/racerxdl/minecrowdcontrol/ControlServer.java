@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -146,7 +145,6 @@ public class ControlServer {
 
     public CommandResult RunCommand(String command, String viewer, RequestType type) {
         CommandResult res = new CommandResult(GetStates()).SetEffectResult(EffectResult.Unavailable);
-
         if (Commands.CommandList.get(command.toUpperCase()) != null) {
             res = Commands.CommandList.get(command.toUpperCase()).Run(GetStates(), player, client, server, viewer, type);
         } else {
